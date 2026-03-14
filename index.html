@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InfiniteCard · Digital Business Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: #080808;
+color: #ffffff;
+overflow-x: hidden;
+line-height: 1.6;
+}
+
+/* ── VARIABLES ── */
+:root {
+–gold: #e8b84b;
+–gold-dim: rgba(232,184,75,0.15);
+–gold-border: rgba(232,184,75,0.25);
+–white: #ffffff;
+–muted: rgba(255,255,255,0.45);
+–muted2: rgba(255,255,255,0.12);
+–black: #080808;
+–card-bg: #111111;
+–card-border: rgba(255,255,255,0.07);
+}
+
+/* ── NAV ── */
+nav {
+position: fixed; top: 0; left: 0; right: 0;
+z-index: 100;
+display: flex; justify-content: space-between; align-items: center;
+padding: 18px 32px;
+background: rgba(8,8,8,0.85);
+backdrop-filter: blur(20px);
+border-bottom: 1px solid var(–muted2);
+}
+.nav-logo {
+font-family: ‘Syne’, sans-serif;
+font-size: 1.1rem; font-weight: 800;
+letter-spacing: -0.5px; color: var(–white);
+}
+.nav-logo span { color: var(–gold); }
+.nav-cta {
+background: var(–gold); color: #080808;
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.75rem; letter-spacing: 0.5px;
+padding: 9px 20px; border-radius: 2px;
+text-decoration: none; transition: all 0.2s;
+}
+.nav-cta:hover { background: #f0c860; transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+min-height: 100vh;
+display: flex; flex-direction: column;
+justify-content: center; align-items: center;
+text-align: center;
+padding: 120px 24px 80px;
+position: relative; overflow: hidden;
+}
+
+/* Animated grid */
+.hero::before {
+content: ‘’;
+position: absolute; inset: 0;
+background-image:
+linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+background-size: 72px 72px;
+animation: gridDrift 24s linear infinite;
+mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+@keyframes gridDrift { 0%{transform:translateY(0)} 100%{transform:translateY(72px)} }
+
+/* Glow orbs */
+.hero::after {
+content: ‘’;
+position: absolute; inset: 0;
+background:
+radial-gradient(ellipse 60% 50% at 50% -10%, rgba(232,184,75,0.1) 0%, transparent 60%),
+radial-gradient(ellipse 40% 40% at 80% 80%, rgba(232,184,75,0.05) 0%, transparent 50%);
+pointer-events: none;
+}
+
+.hero-inner { position: relative; z-index: 2; max-width: 720px; }
+
+.hero-badge {
+display: inline-flex; align-items: center; gap: 8px;
+background: var(–gold-dim);
+border: 1px solid var(–gold-border);
+color: var(–gold);
+font-size: 0.6rem; font-weight: 600; letter-spacing: 4px;
+text-transform: uppercase; padding: 8px 18px; border-radius: 20px;
+margin-bottom: 32px;
+animation: riseUp 0.7s cubic-bezier(0.22,1,0.36,1) both;
+}
+.badge-dot {
+width: 6px; height: 6px; background: var(–gold);
+border-radius: 50%; animation: blink 2.5s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero-h1 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(3rem, 9vw, 5.5rem);
+font-weight: 800; line-height: 0.92;
+letter-spacing: -3px;
+animation: riseUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+.hero-h1 .gold {
+background: linear-gradient(135deg, #e8b84b 0%, #f5d070 50%, #c89030 100%);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.hero-h1 .outline {
+-webkit-text-stroke: 1px rgba(255,255,255,0.3);
+-webkit-text-fill-color: transparent;
+color: transparent;
+}
+
+.hero-p {
+font-size: 1.05rem; color: var(–muted);
+margin-top: 24px; max-width: 480px; margin-left: auto; margin-right: auto;
+font-weight: 400; line-height: 1.7;
+animation: riseUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+}
+
+.hero-actions {
+display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+margin-top: 40px;
+animation: riseUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+}
+.btn-primary {
+display: inline-flex; align-items: center; gap: 10px;
+background: var(–gold); color: #080808;
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.88rem; padding: 15px 32px; border-radius: 2px;
+text-decoration: none; transition: all 0.2s;
+box-shadow: 0 4px 30px rgba(232,184,75,0.25);
+}
+.btn-primary:hover { background: #f0c860; transform: translateY(-2px); box-shadow: 0 8px 40px rgba(232,184,75,0.35); }
+.btn-secondary {
+display: inline-flex; align-items: center; gap: 10px;
+background: transparent; color: var(–white);
+font-family: ‘Syne’, sans-serif; font-weight: 600;
+font-size: 0.88rem; padding: 15px 32px; border-radius: 2px;
+text-decoration: none; transition: all 0.2s;
+border: 1px solid var(–muted2);
+}
+.btn-secondary:hover { border-color: var(–gold-border); color: var(–gold); transform: translateY(-2px); }
+
+/* Stats row */
+.hero-stats {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 0;
+margin-top: 64px; padding-top: 48px;
+border-top: 1px solid var(–muted2);
+animation: riseUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.4s both;
+width: 100%;
+max-width: 560px;
+margin-left: auto;
+margin-right: auto;
+}
+.stat-item {
+text-align: center;
+padding: 0 8px;
+border-right: 1px solid rgba(255,255,255,0.08);
+}
+.stat-item:last-child { border-right: none; }
+.stat-item { text-align: center; }
+.stat-num {
+font-family: ‘Syne’, sans-serif;
+font-size: 2rem; font-weight: 800;
+color: var(–gold); letter-spacing: -1px;
+line-height: 1;
+}
+.stat-label {
+font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
+color: var(–muted); margin-top: 6px; font-weight: 500;
+}
+
+@keyframes riseUp {
+from { opacity:0; transform: translateY(24px); }
+to { opacity:1; transform: translateY(0); }
+}
+
+/* Scroll hint */
+.scroll-hint {
+position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+display: flex; flex-direction: column; align-items: center; gap: 8px;
+font-size: 0.52rem; letter-spacing: 4px; text-transform: uppercase; color: var(–muted);
+animation: riseUp 0.7s ease 0.6s both;
+}
+.scroll-line { display: none; }
+.scroll-hint { display: none; }
+
+/* ── WORK SECTION ── */
+.section {
+padding: 100px 24px;
+max-width: 1100px; margin: 0 auto;
+}
+
+.section-eyebrow {
+display: flex; align-items: center; gap: 14px;
+font-size: 0.58rem; letter-spacing: 5px; text-transform: uppercase;
+color: var(–gold); font-weight: 600; margin-bottom: 16px;
+}
+.section-eyebrow::before {
+content: ‘’; width: 32px; height: 1px; background: var(–gold); opacity: 0.5;
+}
+
+.section-h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(1.8rem, 5vw, 3rem);
+font-weight: 800; letter-spacing: -1.5px;
+line-height: 1.05; margin-bottom: 16px;
+}
+.section-h2 span { color: var(–gold); }
+
+.section-desc {
+color: var(–muted); font-size: 0.95rem; max-width: 480px;
+margin-bottom: 64px; line-height: 1.7;
+}
+
+/* Phone mockup cards */
+.work-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 32px; align-items: start;
+}
+
+.work-card {
+display: flex; flex-direction: column; gap: 24px;
+}
+.work-card:nth-child(2) { margin-top: 48px; }
+
+.phone-frame {
+position: relative;
+background: #161616;
+border-radius: 40px;
+padding: 14px;
+border: 1px solid rgba(255,255,255,0.08);
+box-shadow:
+0 40px 100px rgba(0,0,0,0.7),
+inset 0 1px 0 rgba(255,255,255,0.08);
+transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease;
+cursor: pointer;
+}
+.phone-frame:hover {
+transform: translateY(-12px) rotate(-1.5deg) scale(1.02);
+box-shadow: 0 60px 120px rgba(0,0,0,0.8), 0 0 0 1px var(–gold-border), 0 0 80px rgba(232,184,75,0.06);
+}
+.work-card:nth-child(2) .phone-frame:hover {
+transform: translateY(-12px) rotate(1.5deg) scale(1.02);
+}
+
+/* Side button bumps */
+.phone-frame::before {
+content: ‘’;
+position: absolute; right: -3px; top: 80px;
+width: 3px; height: 60px;
+background: #1e1e1e; border-radius: 0 3px 3px 0;
+}
+.phone-frame::after {
+content: ‘’;
+position: absolute; left: -3px; top: 70px;
+width: 3px; height: 40px;
+background: #1e1e1e; border-radius: 3px 0 0 3px;
+box-shadow: 0 50px 0 #1e1e1e;
+}
+
+.phone-notch {
+width: 90px; height: 24px;
+background: #0a0a0a; border-radius: 0 0 16px 16px;
+margin: 0 auto 8px;
+display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.notch-cam { width: 8px; height: 8px; background: #1a1a1a; border-radius: 50%; border: 1px solid #222; }
+.notch-speaker { width: 28px; height: 4px; background: #1a1a1a; border-radius: 2px; }
+
+.phone-screen {
+border-radius: 28px;
+overflow: hidden;
+background: #f0ebe4;
+aspect-ratio: 9/19;
+position: relative;
+}
+
+/* Tata’s preview */
+.preview-tatas {
+width: 100%; height: 100%;
+background: #fdf8f2;
+display: flex; flex-direction: column;
+overflow: hidden; font-family: ‘DM Sans’, sans-serif;
+}
+.pt-header {
+background: #e8714a; padding: 10px 14px;
+display: flex; justify-content: space-between; align-items: center;
+}
+.pt-header-text { font-family: ‘Syne’, sans-serif; font-size: 0.6rem; font-weight: 800; color: white; letter-spacing: 1px; }
+.pt-logo-circle {
+width: 36px; height: 36px; background: white; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 0.35rem; font-weight: 800; color: #111; text-align: center; line-height: 1.1;
+border: 2px solid rgba(232,113,74,0.3);
+}
+.pt-hero {
+background: linear-gradient(160deg, #2a0a10, #3a1520, #1a1a1a);
+padding: 16px 14px 12px; flex-shrink: 0;
+}
+/* papel picado mini */
+.pt-picado {
+display: flex; gap: 2px; margin-bottom: 8px;
+}
+.pt-flag { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 12px solid #e8714a; }
+.pt-flag:nth-child(2) { border-top-color: #35d3e1; }
+.pt-flag:nth-child(3) { border-top-color: #db7ec4; }
+.pt-flag:nth-child(4) { border-top-color: #f7c48e; }
+.pt-flag:nth-child(5) { border-top-color: #511675; }
+.pt-flag:nth-child(6) { border-top-color: #35d3e1; }
+.pt-flag:nth-child(7) { border-top-color: #e8714a; }
+.pt-flag:nth-child(8) { border-top-color: #db7ec4; }
+.pt-name { font-family: ‘Syne’, sans-serif; font-size: 1.4rem; font-weight: 800; color: white; line-height: 0.9; letter-spacing: -1px; }
+.pt-name span { color: #f7c48e; }
+.pt-sub { font-size: 0.38rem; color: rgba(255,255,255,0.6); letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
+.pt-orange-bar { background: #e8714a; padding: 5px 14px; font-family: ‘Syne’, sans-serif; font-size: 0.42rem; color: white; letter-spacing: 2px; font-weight: 700; display: flex; justify-content: space-between; }
+.pt-stats { display: flex; border-bottom: 2px solid #e8714a; background: white; }
+.pt-stat { flex: 1; text-align: center; padding: 6px 2px; border-right: 1px solid rgba(0,0,0,0.06); }
+.pt-stat:last-child { border-right: none; }
+.pt-stat-n { font-family: ‘Syne’, sans-serif; font-size: 0.55rem; font-weight: 800; color: #e8714a; line-height: 1; }
+.pt-stat-l { font-size: 0.3rem; color: rgba(0,0,0,0.4); letter-spacing: 1px; text-transform: uppercase; margin-top: 1px; }
+.pt-specials { background: #511675; margin: 6px; border-radius: 3px; padding: 6px 8px; border-left: 3px solid #db7ec4; }
+.pt-spec-title { font-size: 0.32rem; letter-spacing: 2px; color: #db7ec4; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+.pt-spec-row { display: flex; gap: 6px; align-items: center; font-size: 0.32rem; color: rgba(255,255,255,0.85); font-weight: 600; margin-bottom: 2px; }
+.pt-spec-day { color: #f7c48e; font-family: ‘Syne’, sans-serif; font-size: 0.32rem; font-weight: 700; min-width: 22px; }
+.pt-btn { margin: 0 6px 4px; background: #e8714a; border-radius: 3px; padding: 5px 8px; display: flex; align-items: center; gap: 5px; }
+.pt-btn-label { font-size: 0.34rem; font-weight: 700; color: white; }
+.pt-btn-detail { font-size: 0.28rem; color: rgba(255,255,255,0.6); }
+.pt-btn-ghost { margin: 0 6px 4px; background: white; border-radius: 3px; padding: 5px 8px; display: flex; align-items: center; gap: 5px; border: 1px solid rgba(0,0,0,0.1); }
+.pt-btn-ghost .pt-btn-label { color: #1a1a1a; }
+.pt-btn-ghost .pt-btn-detail { color: rgba(0,0,0,0.4); }
+.pt-socials { display: flex; gap: 4px; margin: 0 6px; }
+.pt-soc { flex: 1; height: 18px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.28rem; color: white; font-weight: 700; letter-spacing: 0.5px; }
+
+/* Gabby preview */
+.preview-gabby {
+width: 100%; height: 100%;
+background: #161612;
+display: flex; flex-direction: column;
+overflow: hidden; font-family: ‘DM Sans’, sans-serif;
+}
+.pg-header {
+background: linear-gradient(180deg, rgba(22,22,18,0.95) 0%, transparent 100%);
+padding: 8px 12px;
+display: flex; justify-content: space-between; align-items: center;
+position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+}
+.pg-hs { background: rgba(22,22,18,0.8); padding: 4px 7px; border-radius: 2px; }
+.pg-hs-text { font-size: 0.32rem; font-weight: 800; color: white; letter-spacing: 0.5px; }
+.pg-hs-text span { color: #CD1935; }
+.pg-logo-sq { width: 32px; height: 32px; background: white; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.28rem; font-weight: 900; color: #CD1935; text-align: center; line-height: 1.1; }
+.pg-hero-area {
+height: 120px; position: relative; flex-shrink: 0;
+background: linear-gradient(160deg, #1A0A3A 0%, #6B1A5A 35%, #D44A1A 65%, #FF7A30 85%, #FFB340 100%);
+overflow: hidden;
+}
+.pg-hero-overlay {
+position: absolute; inset: 0;
+background: linear-gradient(180deg, transparent 30%, rgba(22,22,18,0.7) 80%, #161612 100%);
+}
+.pg-hero-text { position: absolute; bottom: 10px; left: 12px; z-index: 2; }
+.pg-eyebrow { font-size: 0.28rem; letter-spacing: 2px; color: white; background: #CD1935; padding: 2px 5px; display: inline-block; margin-bottom: 3px; font-weight: 700; }
+.pg-name { font-family: ‘Syne’, sans-serif; font-size: 1rem; font-weight: 800; color: white; line-height: 0.9; letter-spacing: -0.5px; }
+.pg-tagline { font-size: 0.28rem; color: rgba(255,255,255,0.6); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; }
+.pg-stats { display: flex; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); margin-top: 4px; }
+.pg-stat { flex: 1; text-align: center; padding: 5px 2px; border-right: 1px solid rgba(255,255,255,0.1); }
+.pg-stat:last-child { border-right: none; }
+.pg-stat-n { font-family: ‘Syne’, sans-serif; font-size: 0.5rem; font-weight: 800; color: #CD1935; }
+.pg-stat-l { font-size: 0.27rem; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; }
+.pg-btn { margin: 4px 8px 0; background: #CD1935; border-radius: 1px; padding: 5px 8px; display: flex; align-items: center; gap: 5px; }
+.pg-btn-label { font-size: 0.33rem; font-weight: 700; color: white; flex: 1; }
+.pg-btn-ghost { margin: 3px 8px 0; background: rgba(255,255,255,0.04); border-radius: 1px; padding: 5px 8px; display: flex; align-items: center; gap: 5px; border: 1px solid rgba(255,255,255,0.1); }
+.pg-btn-ghost .pg-btn-label { color: white; }
+.pg-info { margin: 6px 8px 0; border: 1px solid rgba(255,255,255,0.1); border-radius: 1px; }
+.pg-info-row { display: flex; align-items: center; gap: 6px; padding: 5px 8px; font-size: 0.3rem; color: rgba(255,255,255,0.7); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.pg-info-row:last-child { border-bottom: none; }
+.pg-dia { width: 4px; height: 4px; background: #CD1935; transform: rotate(45deg); flex-shrink: 0; }
+
+/* Work card meta */
+.work-meta { padding: 0 4px; }
+.work-tag {
+display: inline-block;
+background: var(–gold-dim); border: 1px solid var(–gold-border);
+color: var(–gold); font-size: 0.55rem; font-weight: 600;
+letter-spacing: 2px; text-transform: uppercase;
+padding: 4px 10px; border-radius: 20px; margin-bottom: 10px;
+}
+.work-name {
+font-family: ‘Syne’, sans-serif;
+font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
+margin-bottom: 6px;
+}
+.work-desc { font-size: 0.82rem; color: var(–muted); line-height: 1.6; margin-bottom: 14px; }
+.work-link {
+display: inline-flex; align-items: center; gap: 6px;
+color: var(–gold); font-size: 0.75rem; font-weight: 600;
+text-decoration: none; letter-spacing: 0.3px;
+transition: gap 0.2s;
+}
+.work-link:hover { gap: 10px; }
+.work-link svg { width: 14px; height: 14px; }
+
+/* ── PRICING ── */
+.pricing-section {
+padding: 100px 24px;
+background: #0d0d0d;
+border-top: 1px solid var(–muted2);
+border-bottom: 1px solid var(–muted2);
+}
+.pricing-inner { max-width: 1000px; margin: 0 auto; }
+
+.pricing-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+gap: 20px; margin-top: 60px;
+}
+
+.price-card {
+background: var(–card-bg);
+border: 1px solid var(–card-border);
+border-radius: 4px; padding: 32px 28px;
+position: relative; transition: all 0.3s ease;
+}
+.price-card:hover {
+border-color: var(–gold-border);
+transform: translateY(-4px);
+box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.price-card.featured {
+border-color: var(–gold-border);
+background: linear-gradient(135deg, #111 0%, #131008 100%);
+box-shadow: 0 0 0 1px var(–gold-border), 0 20px 60px rgba(232,184,75,0.08);
+}
+.featured-badge {
+position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+background: var(–gold); color: #080808;
+font-family: ‘Syne’, sans-serif; font-size: 0.55rem; font-weight: 800;
+letter-spacing: 2px; text-transform: uppercase;
+padding: 5px 16px; border-radius: 20px;
+}
+.price-tier {
+font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
+color: var(–muted); font-weight: 600; margin-bottom: 12px;
+}
+.price-amount {
+font-family: ‘Syne’, sans-serif;
+font-size: 3rem; font-weight: 800; letter-spacing: -2px;
+color: var(–white); line-height: 1; margin-bottom: 4px;
+}
+.price-amount span { font-size: 1.2rem; color: var(–muted); font-weight: 400; letter-spacing: 0; }
+.price-card.featured .price-amount { color: var(–gold); }
+.price-sub { font-size: 0.75rem; color: var(–muted); margin-bottom: 28px; line-height: 1.5; }
+.price-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.price-feature {
+display: flex; align-items: flex-start; gap: 10px;
+font-size: 0.8rem; color: rgba(255,255,255,0.75); line-height: 1.4;
+}
+.feature-check {
+width: 16px; height: 16px; border-radius: 50%;
+background: var(–gold-dim); border: 1px solid var(–gold-border);
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0; margin-top: 1px;
+color: var(–gold); font-size: 0.55rem;
+}
+.price-card.featured .feature-check { background: rgba(232,184,75,0.2); }
+.price-cta {
+display: block; text-align: center;
+background: var(–muted2); color: var(–white);
+font-family: ‘Syne’, sans-serif; font-weight: 700;
+font-size: 0.8rem; padding: 13px; border-radius: 2px;
+text-decoration: none; transition: all 0.2s;
+letter-spacing: 0.5px;
+}
+.price-cta:hover { background: rgba(255,255,255,0.18); }
+.price-card.featured .price-cta {
+background: var(–gold); color: #080808;
+box-shadow: 0 4px 20px rgba(232,184,75,0.25);
+}
+.price-card.featured .price-cta:hover { background: #f0c860; }
+
+.pricing-note {
+text-align: center; margin-top: 28px;
+font-size: 0.75rem; color: var(–muted); line-height: 1.6;
+}
+.pricing-note strong { color: var(–white); }
+
+/* ── HOW IT WORKS ── */
+.how-section { padding: 100px 24px; max-width: 1000px; margin: 0 auto; }
+.steps-grid {
+display: grid; grid-template-columns: repeat(4, 1fr);
+gap: 0; margin-top: 60px;
+border: 1px solid var(–muted2); border-radius: 4px; overflow: hidden;
+}
+.step {
+padding: 36px 28px;
+background: var(–card-bg);
+border-right: 1px solid var(–muted2);
+transition: background 0.2s;
+}
+.step:last-child { border-right: none; }
+.step:hover { background: #141414; }
+.step-num {
+font-family: ‘Syne’, sans-serif;
+font-size: 2.5rem; font-weight: 800;
+color: var(–gold-dim); letter-spacing: -2px;
+line-height: 1; margin-bottom: 16px;
+-webkit-text-stroke: 1px var(–gold-border);
+color: transparent;
+}
+.step-title {
+font-family: ‘Syne’, sans-serif;
+font-size: 1rem; font-weight: 700;
+margin-bottom: 8px; letter-spacing: -0.3px;
+}
+.step-desc { font-size: 0.78rem; color: var(–muted); line-height: 1.6; }
+
+/* ── CTA SECTION ── */
+.cta-section {
+padding: 120px 24px;
+text-align: center; position: relative; overflow: hidden;
+}
+.cta-section::before {
+content: ‘’;
+position: absolute; inset: 0;
+background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(232,184,75,0.07) 0%, transparent 70%);
+}
+.cta-inner { position: relative; z-index: 2; max-width: 560px; margin: 0 auto; }
+.cta-h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(2rem, 6vw, 3.5rem);
+font-weight: 800; letter-spacing: -2px; line-height: 1;
+margin-bottom: 20px;
+}
+.cta-h2 span { color: var(–gold); }
+.cta-p { font-size: 0.95rem; color: var(–muted); margin-bottom: 40px; line-height: 1.7; }
+.cta-phone {
+font-family: ‘Syne’, sans-serif;
+font-size: 1.8rem; font-weight: 800;
+color: var(–gold); letter-spacing: -1px;
+display: block; margin-bottom: 10px; text-decoration: none;
+transition: all 0.2s;
+}
+.cta-phone:hover { color: #f0c860; transform: scale(1.02); }
+.cta-hint { font-size: 0.7rem; color: var(–muted); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── FOOTER ── */
+footer {
+padding: 28px 32px;
+border-top: 1px solid var(–muted2);
+display: flex; justify-content: space-between; align-items: center;
+flex-wrap: wrap; gap: 12px;
+}
+.footer-brand {
+font-family: ‘Syne’, sans-serif;
+font-size: 0.9rem; font-weight: 800; letter-spacing: -0.3px;
+}
+.footer-brand span { color: var(–gold); }
+.footer-copy { font-size: 0.65rem; color: var(–muted); letter-spacing: 1px; }
+.footer-location { font-size: 0.65rem; color: var(–muted); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+nav { padding: 14px 20px; }
+.work-card:nth-child(2) { margin-top: 0; }
+.steps-grid { grid-template-columns: 1fr 1fr; }
+footer { flex-direction: column; text-align: center; }
+.hero-stats { grid-template-columns: repeat(4, 1fr); gap: 0; }
+}
+@media (max-width: 420px) {
+.hero-stats { grid-template-columns: repeat(2, 1fr); }
+.stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 10px 4px; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+  <div class="nav-logo">Infinite<span>Card</span></div>
+  <a href="sms:4807080880" class="nav-cta">Get Started →</a>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      Now serving clients nationwide
+    </div>
+    <h1 class="hero-h1">
+      Your business.<br>
+      <span class="gold">Always in</span><br>
+      <span class="outline">their pocket.</span>
+    </h1>
+    <p class="hero-p">
+      Custom digital business cards built for restaurants, realtors, contractors, and local businesses. Share anywhere. Update anytime. Starting at $75.
+    </p>
+    <div class="hero-actions">
+      <a href="sms:4807080880" class="btn-primary">
+        Text Us to Order
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="javascript:void(0)" onclick="document.getElementById('work').scrollIntoView({behavior:'smooth'})" class="btn-secondary">See Our Work</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">$75</div>
+        <div class="stat-label">Starting Price</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">48h</div>
+        <div class="stat-label">Turnaround</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Shareable</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">Free</div>
+        <div class="stat-label">Minor Updates</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- WORK -->
+
+<section class="section" id="work">
+  <div class="section-eyebrow">Our Work</div>
+  <h2 class="section-h2">Built for real <span>businesses</span></h2>
+  <p class="section-desc">Every card is custom designed to match the brand, vibe, and personality of each client. No templates. No cookie-cutter.</p>
+
+  <div class="work-grid">
+
+```
+<!-- Tata's Tacos Card -->
+<div class="work-card">
+  <div class="phone-frame">
+    <div class="phone-notch">
+      <div class="notch-cam"></div>
+      <div class="notch-speaker"></div>
+      <div class="notch-cam"></div>
+    </div>
+    <div class="phone-screen">
+      <div class="preview-tatas">
+        <div class="pt-header">
+          <div class="pt-header-text">TATA'S TACOS<br><span style="font-size:0.32rem;opacity:0.7;letter-spacing:1px">EST. 2018 · CHICAGO</span></div>
+          <div class="pt-logo-circle">TATAS<br>TACOS</div>
+        </div>
+        <div class="pt-hero">
+          <div class="pt-picado">
+            <div class="pt-flag"></div><div class="pt-flag"></div><div class="pt-flag"></div>
+            <div class="pt-flag"></div><div class="pt-flag"></div><div class="pt-flag"></div>
+            <div class="pt-flag"></div><div class="pt-flag"></div>
+          </div>
+          <div class="pt-name">TATA'S<br><span>TACOS</span></div>
+          <div class="pt-sub">Authentic · Handcrafted · Celebratory</div>
+        </div>
+        <div class="pt-orange-bar"><span>SIX CORNERS · THE ORIGINAL</span><span>Est. 2018</span></div>
+        <div class="pt-stats">
+          <div class="pt-stat"><div class="pt-stat-n">EST<br>2018</div><div class="pt-stat-l">Founded</div></div>
+          <div class="pt-stat"><div class="pt-stat-n">5★</div><div class="pt-stat-l">Reviews</div></div>
+          <div class="pt-stat"><div class="pt-stat-n">CHI</div><div class="pt-stat-l">Chicago</div></div>
+        </div>
+        <div class="pt-specials">
+          <div class="pt-spec-title">🌮 Weekly Specials</div>
+          <div class="pt-spec-row"><span class="pt-spec-day">MON</span>3 Tacos Dinner Special</div>
+          <div class="pt-spec-row"><span class="pt-spec-day">TUE</span>Taco Tuesday Deals</div>
+          <div class="pt-spec-row"><span class="pt-spec-day">WED</span>Kids Eat Free</div>
+          <div class="pt-spec-row"><span class="pt-spec-day">SAT/SUN</span>Breakfast Tacos</div>
+        </div>
+        <div style="height:6px"></div>
+        <div class="pt-btn"><span style="font-size:0.5rem">📞</span><div><div class="pt-btn-label">Call or Text Us</div><div class="pt-btn-detail">(773) 685-6002</div></div></div>
+        <div class="pt-btn-ghost"><span style="font-size:0.5rem">🌮</span><div><div class="pt-btn-label">Order Online</div><div class="pt-btn-detail">Tatas Express</div></div></div>
+        <div class="pt-btn-ghost"><span style="font-size:0.5rem">📅</span><div><div class="pt-btn-label">Make a Reservation</div><div class="pt-btn-detail">Book your table</div></div></div>
+        <div style="height:6px"></div>
+        <div class="pt-socials">
+          <div class="pt-soc" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">IG</div>
+          <div class="pt-soc" style="background:#1877f2">FB</div>
+          <div class="pt-soc" style="background:#010101;border:1px solid #333">TT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="work-meta">
+    <div class="work-tag">Restaurant</div>
+    <div class="work-name">Tata's Tacos</div>
+    <div class="work-desc">A vibrant Frida-inspired card for Chicago's beloved taco spot. Full brand colors, weekly specials, reservations, and social links.</div>
+    <a href="https://tatastacos.netlify.app" target="_blank" class="work-link">
+      View Live Card
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  </div>
+</div>
+
+<!-- Gabby Sandy Card -->
+<div class="work-card">
+  <div class="phone-frame">
+    <div class="phone-notch">
+      <div class="notch-cam"></div>
+      <div class="notch-speaker"></div>
+      <div class="notch-cam"></div>
+    </div>
+    <div class="phone-screen">
+      <div class="preview-gabby">
+        <div class="pg-hero-area">
+          <div class="pg-hero-overlay"></div>
+          <!-- Stars in sky -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" viewBox="0 0 200 120">
+            <circle cx="20" cy="12" r="0.8" fill="white" opacity="0.7"/>
+            <circle cx="60" cy="6" r="0.6" fill="white" opacity="0.5"/>
+            <circle cx="140" cy="10" r="0.8" fill="white" opacity="0.6"/>
+            <circle cx="170" cy="4" r="0.5" fill="white" opacity="0.5"/>
+          </svg>
+          <div class="pg-hero-text" style="z-index:3">
+            <span class="pg-eyebrow">Realtor® · HomeSmart</span>
+            <div class="pg-name">Gabby<br>Sandy</div>
+            <div class="pg-tagline">Arizona's Most Trusted Realtor</div>
+          </div>
+        </div>
+        <div class="pg-header">
+          <div class="pg-hs"><div class="pg-hs-text"><span>HOME</span>SMART · EST 2018</div></div>
+          <div class="pg-logo-sq">GS<br>REALTOR</div>
+        </div>
+        <div class="pg-stats">
+          <div class="pg-stat"><div class="pg-stat-n" style="color:#CD1935">15+</div><div class="pg-stat-l">Yrs Exp</div></div>
+          <div class="pg-stat"><div class="pg-stat-n" style="color:#CD1935">5★</div><div class="pg-stat-l">Reviews</div></div>
+          <div class="pg-stat"><div class="pg-stat-n" style="color:#CD1935">AZ</div><div class="pg-stat-l">Year-Round</div></div>
+        </div>
+        <div style="height:4px"></div>
+        <div class="pg-btn"><span style="font-size:0.5rem">📞</span><div class="pg-btn-label">Call or Text Gabby</div></div>
+        <div class="pg-btn-ghost"><span style="font-size:0.5rem">✉️</span><div class="pg-btn-label">Send an Email</div></div>
+        <div class="pg-btn-ghost"><span style="font-size:0.5rem">🏡</span><div class="pg-btn-label">Browse Communities</div></div>
+        <div class="pg-btn-ghost"><span style="font-size:0.5rem">💰</span><div class="pg-btn-label">Get Home's Value</div></div>
+        <div style="height:4px"></div>
+        <div class="pg-info">
+          <div class="pg-info-row"><div class="pg-dia"></div>(480) 678-8817</div>
+          <div class="pg-info-row"><div class="pg-dia"></div>gabby@homesbygabby.com</div>
+          <div class="pg-info-row"><div class="pg-dia"></div>Glendale, AZ · West Valley</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="work-meta">
+    <div class="work-tag">Real Estate</div>
+    <div class="work-name">Gabby Sandy · Realtor</div>
+    <div class="work-desc">A sleek dark card for a HomeSmart Realtor in Arizona. Sunset hero, contact buttons, home valuation tool, and contact download.</div>
+    <a href="https://gabbysandyrealtor.netlify.app" target="_blank" class="work-link">
+      View Live Card
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- PRICING -->
+
+<section class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-eyebrow">Pricing</div>
+    <h2 class="section-h2">Simple, <span>transparent</span> pricing</h2>
+    <p class="section-desc">No subscriptions. No hidden fees. Pay once, own it forever. Minor updates always free.</p>
+
+```
+<div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); max-width: 720px; margin: 0 auto;">
+
+  <div class="price-card featured">
+    <div class="featured-badge">One Price. Everything Included.</div>
+    <div class="price-tier">Digital Business Card</div>
+    <div class="price-amount">$75</div>
+    <div class="price-sub">One-time flat fee · Delivered within 48 hours · Minor updates always free</div>
+    <div class="price-features">
+      <div class="price-feature"><div class="feature-check">✓</div>Fully custom branded design</div>
+      <div class="price-feature"><div class="feature-check">✓</div>All contact buttons & links</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Social media integration</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Hours, location & info</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Logo & photo integration</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Hosted free with a shareable link</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Free minor updates forever</div>
+    </div>
+    <a href="sms:4807080880" class="price-cta">Text to Order — $75</a>
+  </div>
+
+  <div class="price-card">
+    <div class="price-tier">Major Updates</div>
+    <div class="price-amount" style="font-size:2rem;">Quoted</div>
+    <div class="price-sub">For big changes after your card is delivered — we'll always give you a fair price before starting</div>
+    <div class="price-features">
+      <div class="price-feature"><div class="feature-check">✓</div>New sections or features</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Full redesign or rebrand</div>
+      <div class="price-feature"><div class="feature-check">✓</div>New graphics or animations</div>
+      <div class="price-feature"><div class="feature-check">✓</div>Custom domain setup</div>
+      <div class="price-feature"><div class="feature-check">✓</div>No surprise charges — ever</div>
+      <div class="price-feature"><div class="feature-check">✓</div>You approve before we start</div>
+    </div>
+    <a href="sms:4807080880" class="price-cta">Text for a Quote</a>
+  </div>
+
+</div>
+
+<div class="pricing-note">
+  <strong>Minor updates are always free</strong> — phone numbers, hours, links, specials, small copy changes. No charge, ever.
+</div>
+```
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+
+<section class="how-section" id="how">
+  <div class="section-eyebrow">Process</div>
+  <h2 class="section-h2">Done in <span>4 steps</span></h2>
+  <p class="section-desc">Fast, simple, and painless. Most cards delivered within 48 hours.</p>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Text Us</div>
+      <div class="step-desc">Send a text to (480) 708-0880. Tell us your business name, what you do, and what you need.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">We Build It</div>
+      <div class="step-desc">We design and build your custom card — matched to your brand, colors, and personality. Usually within 48 hours.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">You Approve</div>
+      <div class="step-desc">We send you a preview link. You review it, request any changes, and give us the green light. Nothing goes live without your sign-off.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">Go Live</div>
+      <div class="step-desc">Your card goes live with a clean shareable link. Drop it in your Instagram bio, texts, email signature, or on a QR code — it works everywhere.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2 class="cta-h2">Ready for your<br><span>digital card?</span></h2>
+    <p class="cta-p">Text us your business name and we'll get started. No forms, no calls, no hassle. Just a text.</p>
+    <a href="sms:4807080880" class="cta-phone">(480) 708-0880</a>
+    <div class="cta-hint">Text us · Glendale, AZ · Serving nationwide</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+  <div class="footer-brand">Infinite<span>Card</span></div>
+  <div class="footer-copy">© 2026 InfiniteCard · 

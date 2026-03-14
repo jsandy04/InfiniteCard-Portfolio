@@ -5,6 +5,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InfiniteCard · Digital Business Cards</title>
+
+<!-- Google Analytics 4 — InfiniteCard Portfolio -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2TGR1W3VH"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-F2TGR1W3VH');
+
+  function track(event_name, params) {
+    gtag('event', event_name, params || {});
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('a[href="sms:4807080880"]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        track('cta_click', {
+          button_label: el.textContent.trim(),
+          location: el.closest('nav') ? 'nav' : el.closest('.cta-section') ? 'cta_section' : el.closest('.price-card') ? 'pricing' : 'hero'
+        });
+      });
+    });
+
+    var seeWorkBtn = document.querySelector('.btn-secondary');
+    if (seeWorkBtn) {
+      seeWorkBtn.addEventListener('click', function() {
+        track('scroll_to_work');
+      });
+    }
+
+    document.querySelectorAll('.work-link').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var cardName = el.closest('.work-card').querySelector('.work-name').textContent.trim();
+        track('view_live_card', { card_name: cardName });
+      });
+    });
+
+    document.querySelectorAll('.price-cta').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var tier = el.closest('.price-card').querySelector('.price-tier').textContent.trim();
+        track('pricing_cta_click', { pricing_tier: tier });
+      });
+    });
+
+    var sections = [
+      { id: 'work',    label: 'portfolio_section' },
+      { id: 'pricing', label: 'pricing_section' },
+      { id: 'how',     label: 'how_it_works_section' }
+    ];
+    var fired = {};
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !fired[entry.target.id]) {
+          fired[entry.target.id] = true;
+          var section = sections.find(function(s){ return s.id === entry.target.id; });
+          if (section) track('section_viewed', { section: section.label });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(function(s) {
+      var el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    });
+
+  });
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,7 +136,6 @@ padding: 120px 24px 80px;
 position: relative; overflow: hidden;
 }
 
-/* Animated grid */
 .hero::before {
 content: ‘’;
 position: absolute; inset: 0;
@@ -78,7 +148,6 @@ mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 10
 }
 @keyframes gridDrift { 0%{transform:translateY(0)} 100%{transform:translateY(72px)} }
 
-/* Glow orbs */
 .hero::after {
 content: ‘’;
 position: absolute; inset: 0;
@@ -155,7 +224,6 @@ border: 1px solid rgba(255,255,255,0.12);
 }
 .btn-secondary:hover { border-color: rgba(232,184,75,0.25); color: #e8b84b; transform: translateY(-2px); }
 
-/* Stats row */
 .hero-stats {
 display: grid;
 grid-template-columns: repeat(4, 1fr);
@@ -174,7 +242,6 @@ padding: 0 8px;
 border-right: 1px solid rgba(255,255,255,0.08);
 }
 .stat-item:last-child { border-right: none; }
-.stat-item { text-align: center; }
 .stat-num {
 font-family: ‘Syne’, sans-serif;
 font-size: 2rem; font-weight: 800;
@@ -191,14 +258,6 @@ from { opacity:0; transform: translateY(24px); }
 to { opacity:1; transform: translateY(0); }
 }
 
-/* Scroll hint */
-.scroll-hint {
-position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-display: flex; flex-direction: column; align-items: center; gap: 8px;
-font-size: 0.52rem; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.45);
-animation: riseUp 0.7s ease 0.6s both;
-}
-.scroll-line { display: none; }
 .scroll-hint { display: none; }
 
 /* ── WORK SECTION ── */
@@ -229,7 +288,6 @@ color: rgba(255,255,255,0.45); font-size: 0.95rem; max-width: 480px;
 margin-bottom: 64px; line-height: 1.7;
 }
 
-/* Phone mockup cards */
 .work-grid {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -261,7 +319,6 @@ box-shadow: 0 60px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(232,184,75,0.25), 0 0 8
 transform: translateY(-12px) rotate(1.5deg) scale(1.02);
 }
 
-/* Side button bumps */
 .phone-frame::before {
 content: ‘’;
 position: absolute; right: -3px; top: 80px;
@@ -315,10 +372,7 @@ border: 2px solid rgba(232,113,74,0.3);
 background: linear-gradient(160deg, #2a0a10, #3a1520, #1a1a1a);
 padding: 16px 14px 12px; flex-shrink: 0;
 }
-/* papel picado mini */
-.pt-picado {
-display: flex; gap: 2px; margin-bottom: 8px;
-}
+.pt-picado { display: flex; gap: 2px; margin-bottom: 8px; }
 .pt-flag { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 12px solid #e8714a; }
 .pt-flag:nth-child(2) { border-top-color: #35d3e1; }
 .pt-flag:nth-child(3) { border-top-color: #db7ec4; }
@@ -454,6 +508,7 @@ background: #e8b84b; color: #080808;
 font-family: ‘Syne’, sans-serif; font-size: 0.55rem; font-weight: 800;
 letter-spacing: 2px; text-transform: uppercase;
 padding: 5px 16px; border-radius: 20px;
+white-space: nowrap;
 }
 .price-tier {
 font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
@@ -519,7 +574,7 @@ transition: background 0.2s;
 .step-num {
 font-family: ‘Syne’, sans-serif;
 font-size: 2.5rem; font-weight: 800;
-color: rgba(232,184,75,0.15); letter-spacing: -2px;
+letter-spacing: -2px;
 line-height: 1; margin-bottom: 16px;
 -webkit-text-stroke: 1px rgba(232,184,75,0.25);
 color: transparent;
@@ -596,13 +651,12 @@ footer { flex-direction: column; text-align: center; }
 
 <nav>
   <div class="nav-logo">Infinite<span>Card</span></div>
-  <a href="sms:4807080880" class="nav-cta" style="background:#e8b84b;color:#080808;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;padding:9px 20px;border-radius:2px;text-decoration:none;">Get Started →</a>
+  <a href="sms:4807080880" class="nav-cta">Get Started →</a>
 </nav>
 
 <!-- HERO -->
 
 <section class="hero">
-  <div class="hero-grid"></div>
   <div class="hero-inner">
     <div class="hero-badge">
       <div class="badge-dot"></div>
@@ -617,7 +671,7 @@ footer { flex-direction: column; text-align: center; }
       Custom digital business cards built for restaurants, realtors, contractors, and local businesses. Share anywhere. Update anytime. Starting at $75.
     </p>
     <div class="hero-actions">
-      <a href="sms:4807080880" class="btn-primary" style="background:#e8b84b;color:#080808;display:inline-flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;padding:15px 32px;border-radius:2px;text-decoration:none;box-shadow:0 4px 30px rgba(232,184,75,0.25);">
+      <a href="sms:4807080880" class="btn-primary">
         Text Us to Order
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -642,7 +696,6 @@ footer { flex-direction: column; text-align: center; }
       </div>
     </div>
   </div>
-
 </section>
 
 <!-- WORK -->
@@ -726,7 +779,6 @@ footer { flex-direction: column; text-align: center; }
       <div class="preview-gabby">
         <div class="pg-hero-area">
           <div class="pg-hero-overlay"></div>
-          <!-- Stars in sky -->
           <svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" viewBox="0 0 200 120">
             <circle cx="20" cy="12" r="0.8" fill="white" opacity="0.7"/>
             <circle cx="60" cy="6" r="0.6" fill="white" opacity="0.5"/>
@@ -756,7 +808,7 @@ footer { flex-direction: column; text-align: center; }
         <div style="height:4px"></div>
         <div class="pg-info">
           <div class="pg-info-row"><div class="pg-dia"></div>(480) 678-8817</div>
-          <div class="pg-info-row"><div class="pg-dia"></div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e191f1c1c073e1611131b0d1c07191f1c1c07501d1113">[email&#160;protected]</a></div>
+          <div class="pg-info-row"><div class="pg-dia"></div>gabby@homesmart.com</div>
           <div class="pg-info-row"><div class="pg-dia"></div>Glendale, AZ · West Valley</div>
         </div>
       </div>
@@ -784,7 +836,7 @@ footer { flex-direction: column; text-align: center; }
     <h2 class="section-h2">Simple, <span>transparent</span> pricing</h2>
     <p class="section-desc">No subscriptions. No hidden fees. Pay once, own it forever. Minor updates always free.</p>
 
-<div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); max-width: 720px; margin: 0 auto;">
+<div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); max-width: 720px; margin: 60px auto 0;">
 
   <div class="price-card featured">
     <div class="featured-badge">One Price. Everything Included.</div>
@@ -868,4 +920,13 @@ footer { flex-direction: column; text-align: center; }
   </div>
 </section>
 
-<!-- FOOTER
+<!-- FOOTER -->
+
+<footer>
+  <div class="footer-brand">Infinite<span>Card</span></div>
+  <div class="footer-copy">© 2026 InfiniteCard · All rights reserved</div>
+  <div class="footer-location">Glendale, AZ · Serving nationwide</div>
+</footer>
+
+</body>
+</html>
